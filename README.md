@@ -1,8 +1,8 @@
-# Data Engineer assignment - Zivver (by Borja González)
+# PII Removal and Data Transformation Pipeline
 
 ## Overview
 
-This assignment processes and transforms JSON Lines data by removing Personally Identifiable Information (PII) and extracting email domains. The transformed data is prepared for integration into an OLAP system, with each record labelled with the original file's date to enable partitioning and historical tracking.
+This project processes and transforms JSON Lines data by removing Personally Identifiable Information (PII) and extracting email domains. The transformed data is prepared for integration into an OLAP system, with each record labelled with the original file's date to enable partitioning and historical tracking.
 
 ## Requirements
 
@@ -41,7 +41,7 @@ Based on the structure of the input data and the TPC-DS benchmark, I assume the 
 
 Personally, I believe in keeping the data architecture as abstract and straightforward as possible, avoiding unnecessary complexity by using off-the-shelf products and managed services, such as Fivetran or Airbyte, for data loading into a data warehouse.
 
-However, given the nature of this assignment, I followed a more manual approach to demonstrate the core data transformations and the loading process, assuming a local setup. 
+However, given the nature of this project, I followed a more manual approach to demonstrate the core data transformations and the loading process, assuming a local setup. 
 
 With that in mind, here’s how I would approach the loading process (the following SQL code is supposed to be written and executed in the Snowflake Console):
 
@@ -64,7 +64,7 @@ FILE_FORMAT = (TYPE = 'PARQUET'); -- or CSV, depending on the format used
 
 3. Handling historical data with SCD Type 2:
 
-To manage historical data changes, I would use Slowly Changing Dimensions (SCD Type 2). This ensures that each time a customer’s information (e.g., email domain) changes, a new record is inserted while the old record is retained for historical reporting. This method is crucial for compliance and maintaining a clear data lineage, which is particularly important in secure environments like Zivver's:
+To manage historical data changes, I would use Slowly Changing Dimensions (SCD Type 2). This ensures that each time a customer’s information (e.g., email domain) changes, a new record is inserted while the old record is retained for historical reporting. This method is crucial for compliance and maintaining a clear data lineage, which is particularly important in secure environments:
 
 ```sql
 MERGE INTO customer_dim AS target
@@ -89,14 +89,12 @@ WHEN NOT MATCHED THEN
 
 ## Compliance and security
 
-Since Zivver focuses on secure communications, the following practices should be implemented:
-
 - Data masking or encryption: fields that still contain sensitive data, like the email domain, should be masked or encrypted to prevent unauthorized access.
 - Only authorized users should have access to customer data, ensuring compliance with regulations like GDPR.
 
 ## Real-world automation with ETL tools
 
-For simplicity, this assignment uses a manual process to load data from my local file system into Snowflake, but in a real-world scenario, I would automate the process as much as possible by using tools such as:
+For simplicity, this project uses a manual process to load data from my local file system into Snowflake, but in a real-world scenario, I would automate the process as much as possible by using tools such as:
 
 - Airflow: to orchestrate the pipeline, schedule and manage batch data exports, and automate the entire ETL process.
 - dbt: to handle in-warehouse transformations directly within Snowflake.
